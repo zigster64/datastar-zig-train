@@ -46,7 +46,9 @@ fn index(_: *App, req: *httpz.Request, res: *httpz.Response) !void {
     return serveFile("index.html", req.arena, res);
 }
 
-pub fn readSignals(comptime T: type, req: *httpz.Request) !T {
+// readSignals needs to be passed a req which looks like a httpz.Request
+// must have req.method, req.query, and query.get
+pub fn readSignals(comptime T: type, req: anytype) !T {
     switch (req.method) {
         .GET => {
             const query = try req.query();
@@ -60,47 +62,94 @@ pub fn readSignals(comptime T: type, req: *httpz.Request) !T {
     }
 }
 
-// fn helloWorld(_: *App, req: *httpz.Request, res: *httpz.Response) !void {
-//     var sse = try datastar.ServerSentEventGenerator.init(res);
-//     const signals = try datastar.readSignals(
-//         Signals,
-//         req,
-//     );
-
-//     inline for (message, 0..) |_, i| {
-//         const fragment = std.fmt.comptimePrint(
-//             "<div id='message'>{s}</div>",
-//             .{message[0 .. i + 1]},
-//         );
-//         try sse.mergeFragments(fragment, .{});
-
-//         std.Thread.sleep(std.time.ns_per_ms * signals.delay);
-//     }
-// }
-
-// \\ data: selector #message
-const message = "Hello, World! Hello Hello, Hello to the World!";
-const HelloContext = struct {
+const HelloComponent = struct {
     delay: u64 = 1000,
     something_else: u32 = 0,
+    const message = "Hello, World! Hello Hello, Hello to the World!";
 
-    fn init(req: *httpz.Request) !HelloContext {
-        return readSignals(HelloContext, req);
+    fn init(req: anytype) !HelloComponent {
+        return readSignals(HelloComponent, req);
     }
-    fn hello(self: HelloContext, stream: std.net.Stream) void {
-        defer stream.close();
-        const w = stream.writer();
-        inline for (message, 0..) |_, i| {
-            w.print("event: datastar-merge-fragments\n", .{}) catch return;
-            w.print("data: fragments <div id='message'>{s}</div>\n", .{message[0 .. i + 1]}) catch return;
-            w.print("\n\n", .{}) catch return;
 
+    fn hello(self: HelloComponent, stream: std.net.Stream) void {
+        defer stream.close();
+        var frag = Fragments.init(stream);
+        var w = frag.writer();
+        inline for (message, 0..) |_, i| {
+            // test a print to the frag writer
+            w.print("<div id='message'>{s}</div>", .{message[0 .. i + 1]}) catch return;
+            frag.endFragment();
+
+            // test lots of writes to the frag writer
+            w.writeAll("<div id='count'>") catch return;
+            w.print("Count={}", .{i}) catch return;
+            w.writeAll("</div>") catch return;
+            frag.endFragment();
             std.Thread.sleep(std.time.ns_per_ms * self.delay);
         }
     }
 };
 
 fn hello(_: *App, req: *httpz.Request, res: *httpz.Response) !void {
-    const ctx = try HelloContext.init(req);
-    try res.startEventStream(ctx, HelloContext.hello);
+    const ctx = try HelloComponent.init(req);
+    try res.startEventStream(ctx, HelloComponent.hello);
 }
+
+const Fragments = struct {
+    stream: std.net.Stream,
+    started: bool = false,
+    // TODO - add any other options here, and apply them to the header
+
+    const Writer = std.io.Writer(
+        *Fragments,
+        anyerror,
+        write,
+    );
+
+    pub fn init(stream: std.net.Stream) Fragments {
+        return Fragments{ .stream = stream };
+    }
+
+    pub fn endFragment(self: *Fragments) void {
+        if (self.started) {
+            self.started = false;
+            self.stream.writer().writeAll("\n\n") catch return;
+        }
+    }
+
+    pub fn header(self: *Fragments) !void {
+        try self.stream.writer().writeAll("event: datastar-merge-fragments\n");
+        self.started = true;
+        // TODO - add any other bits according to the options passed
+    }
+
+    pub fn write(self: *Fragments, bytes: []const u8) !usize {
+        if (!self.started) {
+            try self.header();
+        }
+
+        var start: usize = 0;
+
+        for (bytes, 0..) |b, i| {
+            if (b == '\n') {
+                try self.stream.writer().print("data: fragments {s}\n", .{bytes[start..i]});
+                start = i + 1;
+            }
+        }
+
+        if (start < bytes.len) {
+            try self.stream.writer().print("data: fragments {s}\n", .{bytes[start..]});
+        }
+
+        return bytes.len;
+    }
+
+    pub fn print(self: *Fragments, comptime format: []const u8, args: anytype) !void {
+        std.debug.print("in here\n", .{});
+        return std.fmt.format(self, format, args);
+    }
+
+    pub fn writer(self: *Fragments) Writer {
+        return .{ .context = self };
+    }
+};
