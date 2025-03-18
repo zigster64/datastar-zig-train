@@ -98,7 +98,7 @@
     </div>
   </div>
 
-  <div class="drawer">
+  <div class="drawer" data-signals-delay="500">
     <input id="my-drawer" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content">
       <!-- Page content here -->
@@ -108,7 +108,7 @@
       <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
       <ul class="menu bg-base-200 text-base-content min-h-full w-80 p-4">
         <!-- Sidebar content here -->
-        <li><button data-on-click="@get('/hello?delay=200')">hello world</button></li>
+        <li><button data-on-click="@get('/hello')">hello world</button></li>
         <li><button data-on-click="@get('/bind')">data-bind</button></li>
         <li><a>data-text</a></li>
         <li><a>data-computed</a></li>
@@ -130,6 +130,8 @@
           <h1 class="text-5xl font-bold">Welcome to DatastarApp</h1>
           <p class="py-6">This is a simple starter template using DaisyUI 5 and Tailwind CSS 4 and DataStar.</p>
           <button class="btn btn-primary">Get Started</button>
+
+          <div id='message'></div>
         </div>
       </div>
     </div>

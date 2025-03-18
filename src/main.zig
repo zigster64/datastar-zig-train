@@ -88,12 +88,13 @@ const HelloContext = struct {
     fn handle(self: HelloContext, stream: std.net.Stream) void {
         std.debug.print("in the handler with delay {}\n", .{self.delay});
         const w = stream.writer();
-        w.print("event: datastar-merge-fragments\n", .{}) catch return;
+        w.print("event: datastar-merge-fragments\nselector: #message", .{}) catch return;
         inline for (message, 0..) |_, i| {
             const fragment = std.fmt.comptimePrint(
                 "<div id='message'>{s}</div>",
                 .{message[0 .. i + 1]},
             );
+            std.debug.print("merging fragment {s}\n", .{fragment});
             w.print("data: {s}\n", .{fragment}) catch return;
 
             std.Thread.sleep(std.time.ns_per_ms * self.delay);
