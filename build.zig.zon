@@ -1,0 +1,18 @@
+.{
+    .name = .datastar_zig_train,
+    .version = "0.0.0",
+    .fingerprint = 0xbde892f3a7b39111, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.14.0",
+
+    .dependencies = .{
+        .httpz = .{
+            .url = "git+https://github.com/karlseguin/http.zig#cb760afdb50b1e4b3f37570e6ddbbd04bf9d5c32",
+            .hash = "httpz-0.0.0-PNVzrK6uBgBYP4D-QGrd_g1A6ZS86NQcLJZEPZyRFFoH",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}

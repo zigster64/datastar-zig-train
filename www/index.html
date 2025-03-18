@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datastar Training App</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+
+  <script type="module"
+    src="https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-beta.9/bundles/datastar.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {},
+      },
+      plugins: [daisyui],
+      daisyui: {
+        themes: all,
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-base-200">
+  <!-- Navbar -->
+  <div class="navbar bg-base-100 shadow-lg">
+
+    <div class="flex-1">
+      <a class="btn btn-ghost text-xl">DatastarApp</a>
+    </div>
+    <div class="dropdown">
+      <div tabindex="0" role="button" class="btn m-1">
+        Theme
+        <svg width="12px" height="12px" class="inline-block h-2 w-2 fill-current opacity-60"
+          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 2048">
+          <path d="M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z"></path>
+        </svg>
+      </div>
+      <ul tabindex="0" class="dropdown-content bg-base-300 rounded-box z-1 w-52 p-2 shadow-2xl">
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Default"
+            value="default" />
+        </li>
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Synthwave"
+            value="synthwave" />
+        </li>
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Corporate"
+            value="corporate" />
+        </li>
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Garden"
+            value="garden" />
+        </li>
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Forest"
+            value="forest" />
+        </li>
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Retro"
+            value="retro" />
+        </li>
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Cyberpunk"
+            value="cyberpunk" />
+        </li>
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Valentine"
+            value="valentine" />
+        </li>
+        <li>
+          <input type="radio" name="theme-dropdown"
+            class="theme-controller w-full btn btn-sm btn-block btn-ghost justify-start" aria-label="Aqua"
+            value="aqua" />
+        </li>
+      </ul>
+    </div>
+    <div class="flex-none">
+      <button class="btn btn-square btn-ghost">
+        <sv g xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          class="inline-block w-6 h-6 stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 min-h-screen flex flex-col">
+    <!-- Hero Section -->
+    <div class="hero min-h-screen bg-base-200">
+      <div class="hero-content text-center">
+        <div class="max-w-md">
+          <h1 class="text-5xl font-bold">Welcome to DatastarApp</h1>
+          <p class="py-6">This is a simple starter template using DaisyUI 5 and Tailwind CSS 4 and DataStar.</p>
+          <button class="btn btn-primary">Get Started</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="container mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="card bg-base-100 shadow-xl">
+          <figure><img src="https://placecats.com/300/200" alt="Kitten" /></figure>
+          <div class="card-body">
+            <h2 class="card-title">Cute Kitten</h2>
+            <p>Adorable kitten to brighten your day!</p>
+            <div class="card-actions justify-end">
+              <button class="btn btn-secondary">Adopt</button>
+            </div>
+          </div>
+        </div>
+        <div class="card bg-base-100 shadow-xl">
+          <figure><img src="https://placecats.com/301/200" alt="Kitten" /></figure>
+          <div class="card-body">
+            <h2 class="card-title">More Kittens</h2>
+            <p>Who doesn’t love more kittens?</p>
+            <div class="card-actions justify-end">
+              <button class="btn btn-accent">View</button>
+            </div>
+          </div>
+        </div>
+        <div class="card bg-base-100 shadow-xl">
+          <figure><img src="https://placecats.com/302/200" alt="Kitten" /></figure>
+          <div class="card-body">
+            <h2 class="card-title">Even More Kittens</h2>
+            <p>Yes, even more kittens!</p>
+            <div class="card-actions justify-end">
+              <button class="btn btn-primary">Explore</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
