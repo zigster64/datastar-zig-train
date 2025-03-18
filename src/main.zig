@@ -51,13 +51,10 @@ pub fn readSignals(comptime T: type, req: *httpz.Request) !T {
         .GET => {
             const query = try req.query();
             const signals = query.get("datastar") orelse return error.MissingDatastarKey;
-            std.debug.print("got datastar param {s}\n", .{signals});
-
             return std.json.parseFromSliceLeaky(T, req.arena, signals, .{});
         },
         else => {
             const body = req.body() orelse return error.MissingBody;
-
             return std.json.parseFromSliceLeaky(T, req.arena, body, .{});
         },
     }
@@ -81,30 +78,29 @@ pub fn readSignals(comptime T: type, req: *httpz.Request) !T {
 //     }
 // }
 
-const message = "Hello, world!";
+// \\ data: selector #message
+const message = "Hello, World! Hello Hello, Hello to the World!";
 const HelloContext = struct {
     delay: u64 = 1000,
+    something_else: u32 = 0,
 
-    fn handle(self: HelloContext, stream: std.net.Stream) void {
-        std.debug.print("in the handler with delay {}\n", .{self.delay});
+    fn init(req: *httpz.Request) !HelloContext {
+        return readSignals(HelloContext, req);
+    }
+    fn hello(self: HelloContext, stream: std.net.Stream) void {
+        defer stream.close();
         const w = stream.writer();
-        w.print("event: datastar-merge-fragments\nselector: #message", .{}) catch return;
         inline for (message, 0..) |_, i| {
-            const fragment = std.fmt.comptimePrint(
-                "<div id='message'>{s}</div>",
-                .{message[0 .. i + 1]},
-            );
-            std.debug.print("merging fragment {s}\n", .{fragment});
-            w.print("data: {s}\n", .{fragment}) catch return;
+            w.print("event: datastar-merge-fragments\n", .{}) catch return;
+            w.print("data: fragments <div id='message'>{s}</div>\n", .{message[0 .. i + 1]}) catch return;
+            w.print("\n\n", .{}) catch return;
 
             std.Thread.sleep(std.time.ns_per_ms * self.delay);
         }
-        w.writeAll("\n\n") catch return;
     }
 };
 
 fn hello(_: *App, req: *httpz.Request, res: *httpz.Response) !void {
-    const ctx = try readSignals(HelloContext, req);
-    std.debug.print("parsed a hello context with delay {}\n", .{ctx.delay});
-    try res.startEventStream(ctx, HelloContext.handle);
+    const ctx = try HelloContext.init(req);
+    try res.startEventStream(ctx, HelloContext.hello);
 }

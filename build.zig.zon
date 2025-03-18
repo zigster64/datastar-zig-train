@@ -8,10 +8,10 @@
             .url = "git+https://github.com/karlseguin/http.zig#cb760afdb50b1e4b3f37570e6ddbbd04bf9d5c32",
             .hash = "httpz-0.0.0-PNVzrK6uBgBYP4D-QGrd_g1A6ZS86NQcLJZEPZyRFFoH",
         },
-        .datastar = .{
-            .url = "git+https://github.com/starfederation/datastar-zig#d03f7c19942512bdf1f808fb9fef2e4f4eb578f9",
-            .hash = "datastar-1.0.0-beta.3-AAAAAAV1AAD7f3SxXpShvKNFJ2iVgBz0J3iYdwlmFiB8",
-        },
+        // .datastar = .{
+        //     .url = "git+https://github.com/starfederation/datastar-zig#d03f7c19942512bdf1f808fb9fef2e4f4eb578f9",
+        //     .hash = "datastar-1.0.0-beta.3-AAAAAAV1AAD7f3SxXpShvKNFJ2iVgBz0J3iYdwlmFiB8",
+        // },
     },
     .paths = .{
         "build.zig",
