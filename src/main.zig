@@ -10,8 +10,8 @@ pub fn main() !void {
 
     var server = try httpz.Server(*App).init(allocator, .{
         .port = 8081,
-        .workers = .{ .min_conn = 4096, .max_conn = 8192 },
-        .thread_pool = .{ .count = 4096 }, // lets have 4096 threads in the pool !!
+        .workers = .{ .min_conn = 2 * 1024, .max_conn = 8 * 1024 },
+        .thread_pool = .{ .count = 4 * 1024 }, // lets have a massive thread pool !
     }, &app);
     var router = try server.router(.{});
     router.get("/", index, .{});

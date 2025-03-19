@@ -14,7 +14,6 @@ pub fn handler(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
     const self = try Datastar.readSignals(Self, req);
     var stream = try res.startEventStreamSync();
 
-    // TODO - spawn a coroutine to look after this !!
     defer stream.close();
     var frag = MergeFragments.init(stream);
     var w = frag.writer();
