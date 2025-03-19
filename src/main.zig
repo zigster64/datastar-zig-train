@@ -20,7 +20,9 @@ pub fn main() !void {
     try server.listen();
 }
 
-const App = struct {};
+const App = struct {
+    call_count: usize = 0,
+};
 
 fn serveFile(filename: []const u8, arena: std.mem.Allocator, res: *httpz.Response) !void {
     errdefer {
@@ -65,10 +67,13 @@ const HelloComponent = struct {
     something_else: u32 = 0,
     const message = "Hello, World! Hello Hello, Hello to the World!";
 
-    fn handler(_: *App, req: *httpz.Request, res: *httpz.Response) !void {
-        try res.startEventStream(try readSignals(HelloComponent, req), HelloComponent.hello);
-    }
-    fn hello(self: HelloComponent, stream: std.net.Stream) void {
+    fn handler(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
+        app.call_count += 1;
+        std.debug.print("Call number {d} in app\n", .{app.call_count});
+        const self = try readSignals(HelloComponent, req);
+        var stream = try res.startEventStream();
+
+        // TODO - spawn a coroutine to look after this !!
         defer stream.close();
         var frag = MergeFragments.init(stream);
         var w = frag.writer();
