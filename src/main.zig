@@ -15,9 +15,7 @@ pub fn main() !void {
     var server = try httpz.Server(*App).init(allocator, .{ .port = 8081 }, &app);
     var router = try server.router(.{});
     router.get("/", index, .{});
-    router.get("/hello", hello, .{});
-    // router.get("/hello", helloWorld, .{});
-    // router.get("/bind", bind, .{});
+    router.get("/hello", HelloComponent.handler, .{});
     std.debug.print("Starting DataStar test app on http://localhost:8081\n", .{});
     try server.listen();
 }
@@ -67,20 +65,18 @@ const HelloComponent = struct {
     something_else: u32 = 0,
     const message = "Hello, World! Hello Hello, Hello to the World!";
 
-    fn init(req: anytype) !HelloComponent {
-        return readSignals(HelloComponent, req);
+    fn handler(_: *App, req: *httpz.Request, res: *httpz.Response) !void {
+        try res.startEventStream(try readSignals(HelloComponent, req), HelloComponent.hello);
     }
-
     fn hello(self: HelloComponent, stream: std.net.Stream) void {
         defer stream.close();
-        var frag = Fragments.init(stream);
+        var frag = MergeFragments.init(stream);
         var w = frag.writer();
         inline for (message, 0..) |_, i| {
             // test a print to the frag writer
             w.print("<div id='message'>{s}</div>", .{message[0 .. i + 1]}) catch return;
-            frag.endFragment();
-
-            // test lots of writes to the frag writer
+            // add another update to the same fragment that updates a different part of the DOM
+            // test multiple writes to the frag writer
             w.writeAll("<div id='count'>") catch return;
             w.print("Count={}", .{i}) catch return;
             w.writeAll("</div>") catch return;
@@ -90,40 +86,35 @@ const HelloComponent = struct {
     }
 };
 
-fn hello(_: *App, req: *httpz.Request, res: *httpz.Response) !void {
-    const ctx = try HelloComponent.init(req);
-    try res.startEventStream(ctx, HelloComponent.hello);
-}
-
-const Fragments = struct {
+const MergeFragments = struct {
     stream: std.net.Stream,
     started: bool = false,
     // TODO - add any other options here, and apply them to the header
 
     const Writer = std.io.Writer(
-        *Fragments,
+        *MergeFragments,
         anyerror,
         write,
     );
 
-    pub fn init(stream: std.net.Stream) Fragments {
-        return Fragments{ .stream = stream };
+    pub fn init(stream: std.net.Stream) MergeFragments {
+        return MergeFragments{ .stream = stream };
     }
 
-    pub fn endFragment(self: *Fragments) void {
+    pub fn endFragment(self: *MergeFragments) void {
         if (self.started) {
             self.started = false;
             self.stream.writer().writeAll("\n\n") catch return;
         }
     }
 
-    pub fn header(self: *Fragments) !void {
+    pub fn header(self: *MergeFragments) !void {
         try self.stream.writer().writeAll("event: datastar-merge-fragments\n");
         self.started = true;
         // TODO - add any other bits according to the options passed
     }
 
-    pub fn write(self: *Fragments, bytes: []const u8) !usize {
+    pub fn write(self: *MergeFragments, bytes: []const u8) !usize {
         if (!self.started) {
             try self.header();
         }
@@ -144,12 +135,7 @@ const Fragments = struct {
         return bytes.len;
     }
 
-    pub fn print(self: *Fragments, comptime format: []const u8, args: anytype) !void {
-        std.debug.print("in here\n", .{});
-        return std.fmt.format(self, format, args);
-    }
-
-    pub fn writer(self: *Fragments) Writer {
+    pub fn writer(self: *MergeFragments) Writer {
         return .{ .context = self };
     }
 };
