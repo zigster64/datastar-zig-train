@@ -54,4 +54,3 @@ pub fn writer(self: *Self) Writer {
 }
 
 const std = @import("std");
-const httpz = @import("httpz");
