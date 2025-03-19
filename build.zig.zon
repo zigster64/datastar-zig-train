@@ -9,8 +9,8 @@
         // Tardy for comms via a coroutine
         // Woot !
         .httpz = .{
-            .url = "git+https://github.com/zigster64/http.zig#tardy-sse",
-            .hash = "httpz-0.0.0-PNVzrOKwBgDliuZgqV6ct2OxuK2GHA9RhaUDTBozLKcD",
+            .url = "git+https://github.com/zigster64/http.zig?ref=tardy-sse#877b5cdc9617d59a6deed5a58b14dc42fc77769a",
+            .hash = "httpz-0.0.0-PNVzrKCwBgCEnUPIM9QGZhpF0HIoEA4mf3uzO7I9EaKO",
         },
         // .httpz = .{
         //     .url = "git+https://github.com/karlseguin/http.zig#cb760afdb50b1e4b3f37570e6ddbbd04bf9d5c32",

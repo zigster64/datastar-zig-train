@@ -6,11 +6,35 @@ const message = "Hello, World! Hello Hello, Hello to the World!";
 
 const Self = @This();
 
+// This is vanilla HTTP handler that holds the SSE connection open in the original
+// thread, then writes to that socket with a delay
 pub fn handler(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
     app.call_count += 1;
     std.debug.print("Call number {d} in app\n", .{app.call_count});
     const self = try Datastar.readSignals(Self, req);
-    var stream = try res.startEventStream();
+    var stream = try res.startEventStreamSync();
+
+    // TODO - spawn a coroutine to look after this !!
+    defer stream.close();
+    var frag = MergeFragments.init(stream);
+    var w = frag.writer();
+    inline for (message, 0..) |_, i| {
+        // test a print to the frag writer
+        try w.print("<div id='message'>{s}</div>", .{message[0 .. i + 1]});
+
+        // add another update to the same fragment that updates a different part of the DOM
+        // but still part of the same merge-fragment packet
+        try w.print("<div id='count'>{}</div>", .{i});
+        frag.endFragment();
+        std.Thread.sleep(std.time.ns_per_ms * self.delay);
+    }
+}
+
+pub fn handlerCoroutine(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
+    app.call_count += 1;
+    std.debug.print("Call number {d} in app\n", .{app.call_count});
+    const self = try Datastar.readSignals(Self, req);
+    var stream = try res.startEventStreamSync();
 
     // TODO - spawn a coroutine to look after this !!
     defer stream.close();

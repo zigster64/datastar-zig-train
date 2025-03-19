@@ -1,20 +1,27 @@
-all:
-	find src -name '.env' -o -name '*.zig' -o -name '*.html' | entr zig build -freference-trace=11 run
+help:
+	cat Makefile
 
 run:
 	zig build run
 
+deps:
+	zig fetch --save git+https://github.com/zigster64/http.zig#tardy-sse
+
+loadtest:
+	#h2load -n 1000 -c 100 -m 100  http://localhost:8081/hello?datastar=%7B%22delay%22%3A1200%7D
+	h2load -n 100 -c 100 -m 100  http://localhost:8081/hello?datastar=%7B%22delay%22%3A1200%7D
+
 curl:
 	curl http://localhost:8081/hello?datastar=%7B%22delay%22%3A500%7D
 
-hammer200:
+curl200:
 	@for i in $$(seq 1 200); do \
-		curl http://localhost:8081/hello?datastar=%7B%22delay%22%3A1200%7D > /dev/null & \
+		curl -s -N http://localhost:8081/hello?datastar=%7B%22delay%22%3A1200%7D > /dev/null & \
 	done; \
 	wait
 
-hammer20k:
+curl20k:
 	@for i in $$(seq 1 20000); do \
-		curl http://localhost:8081/hello?datastar=%7B%22delay%22%3A1200%7D > /dev/null & \
+		curl -s -N http://localhost:8081/hello?datastar=%7B%22delay%22%3A1200%7D > /dev/null & \
 	done; \
 	wait
