@@ -4,6 +4,10 @@
     .fingerprint = 0xbde892f3a7b39111, // Changing this has security and trust implications.
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
+        // this is my special fork of the real http.zig - this one has a hack to enable
+        // the caller to take over the SSE connection .. which I then use too handover to
+        // Tardy for comms via a coroutine
+        // Woot !
         .httpz = .{
             .url = "git+https://github.com/zigster64/http.zig#tardy-sse",
             .hash = "httpz-0.0.0-PNVzrOKwBgDliuZgqV6ct2OxuK2GHA9RhaUDTBozLKcD",
