@@ -3,7 +3,10 @@ help:
 
 run:
 	ulimit -n 65536
-	zig build run
+	zig build run -Doptimize=ReleaseFast
+
+build-bsd:
+	zig build -Doptimize=ReleaseFast -Dtarget=freebsd-x86_64
 
 deps:
 	#zig fetch --save git+https://github.com/zigster64/http.zig#tardy-sse

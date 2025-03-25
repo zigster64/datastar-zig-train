@@ -12,7 +12,7 @@ pub const Streams = struct {
 
     pub fn deinit(self: *Streams) void {
         for (self.streams.items) |s| {
-            s.deinit();
+            s.close();
         }
         self.streams.deinit();
     }
