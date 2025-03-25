@@ -38,11 +38,11 @@ fn tick(app: *App) void {
         var i: usize = list.len;
         while (i > 0) {
             i -= 1;
-            var sub = list[i];
-            app.clock.render(i + 1, sub.stream) catch {
+            var subscriber = list[i];
+            app.clock.render(i + 1, subscriber) catch {
                 // something failed writing to this sub, so unsub them
                 std.debug.print("Closing subscriber {}\n", .{i + 1});
-                sub.deinit();
+                subscriber.close();
                 _ = app.clockSubscribers.streams.swapRemove(i);
             };
         }

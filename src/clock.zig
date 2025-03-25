@@ -8,10 +8,11 @@ ticks: usize = 0,
 // See app.zig -> clock() function that generates output to all clock subscribers
 // by calling this render() function below
 pub fn handler(app: *App, req: *httpz.Request, res: *httpz.Response) !void {
+    _ = req;
     app.call_count += 1;
 
     const stream = try res.startEventStreamSync();
-    const id = try app.clockSubscribers.add(app, stream, req);
+    const id = try app.clockSubscribers.add(stream);
     std.debug.print("added new clock subscriber {} ... and leaving this connection open but closing the thread\n", .{id + 1});
 }
 
