@@ -4,18 +4,10 @@
     .fingerprint = 0xbde892f3a7b39111, // Changing this has security and trust implications.
     .minimum_zig_version = "0.14.0",
     .dependencies = .{
-        // this is my special fork of the real http.zig - this one has a hack to enable
-        // the caller to take over the SSE connection .. which I then use too handover to
-        // Tardy for comms via a coroutine
-        // Woot !
         .httpz = .{
-            .url = "git+https://github.com/zigster64/http.zig?ref=tardy-sse#877b5cdc9617d59a6deed5a58b14dc42fc77769a",
-            .hash = "httpz-0.0.0-PNVzrKCwBgCEnUPIM9QGZhpF0HIoEA4mf3uzO7I9EaKO",
+            .url = "git+https://github.com/karlseguin/http.zig#91600601f81544c6eeff48e83b76e1e6c5fea00b",
+            .hash = "httpz-0.0.0-PNVzrLa0BgBOHnKWUMiDXXU8iXKdc8qENAWc60QubUq6",
         },
-        // .httpz = .{
-        //     .url = "git+https://github.com/karlseguin/http.zig#cb760afdb50b1e4b3f37570e6ddbbd04bf9d5c32",
-        //     .hash = "httpz-0.0.0-PNVzrK6uBgBYP4D-QGrd_g1A6ZS86NQcLJZEPZyRFFoH",
-        // },
         .tardy = .{
             .url = "git+https://github.com/tardy-org/tardy?ref=v0.3.0#cd454060f3b6006368d53c05ab96cd16c73c34de",
             .hash = "tardy-0.3.0-69wrgi7PAwDFhO7m0aXae6N15s2b28VIOrnRrSHHake6",

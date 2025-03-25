@@ -6,7 +6,8 @@ pub fn main() !void {
         .ok => std.debug.print("Shutdown OK\n", .{}),
     });
 
-    var app = App{};
+    var app = App.init(allocator);
+    try app.runClock();
 
     var server = try httpz.Server(*App).init(allocator, .{
         .port = 8081,
@@ -15,8 +16,8 @@ pub fn main() !void {
     }, &app);
     var router = try server.router(.{});
     router.get("/", index, .{});
-    router.get("/hello", HelloComponent.handler, .{});
-    router.get("/clock", ClockComponent.handler, .{});
+    router.get("/hello", Hello.handler, .{});
+    router.get("/clock", Clock.handler, .{});
     std.debug.print("Starting DataStar test app on http://localhost:8081\n", .{});
     try server.listen();
 }
@@ -47,5 +48,5 @@ const std = @import("std");
 const httpz = @import("httpz");
 
 const App = @import("app.zig");
-const HelloComponent = @import("hello.zig");
-const ClockComponent = @import("clock.zig");
+const Hello = @import("hello.zig");
+const Clock = @import("clock.zig");
