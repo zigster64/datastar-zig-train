@@ -10,12 +10,13 @@ pub fn main() !void {
 
     var server = try httpz.Server(*App).init(allocator, .{
         .port = 8081,
-        .workers = .{ .min_conn = 2 * 1024, .max_conn = 8 * 1024 },
-        .thread_pool = .{ .count = 4 * 1024 }, // lets have a massive thread pool !
+        // .workers = .{ .min_conn = 2 * 1024, .max_conn = 8 * 1024 },
+        // .thread_pool = .{ .count = 4 * 1024 }, // lets have a massive thread pool !
     }, &app);
     var router = try server.router(.{});
     router.get("/", index, .{});
     router.get("/hello", HelloComponent.handler, .{});
+    router.get("/clock", ClockComponent.handler, .{});
     std.debug.print("Starting DataStar test app on http://localhost:8081\n", .{});
     try server.listen();
 }
@@ -47,3 +48,4 @@ const httpz = @import("httpz");
 
 const App = @import("app.zig");
 const HelloComponent = @import("hello.zig");
+const ClockComponent = @import("clock.zig");
